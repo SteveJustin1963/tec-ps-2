@@ -1,3 +1,46 @@
+work in progress
+
+
+This Z80 assembly code is for reading data from a PS/2 mouse and updating a display based on the mouse input. Let's break down the code and explain each section:
+
+1. **Defining Constants**:
+   - `PS2_DATA_PORT`, `PS2_CLOCK_PORT`: These constants define the addresses of the PS/2 data and clock ports.
+   - `X_BUF`, `Y_BUF`, `BTN_BUF`: These constants define the addresses of the buffers where X coordinate, Y coordinate, and button state data will be stored, respectively.
+   - `DISP_PORT`: This constant defines the address of the display port where data will be sent to update the display.
+
+2. **Program Initialization**:
+   - The program starts at address `0x0000`.
+   - `DI` instruction is used to disable interrupts for precise timing. This ensures that the program can accurately control the timing of reading data from the PS/2 mouse.
+
+3. **Main Loop**:
+   - The program enters a loop labeled `MAIN_LOOP`, where it continuously reads data from the PS/2 mouse and updates the display.
+   - `CALL READ_MOUSE` is used to read data from the PS/2 mouse.
+   - `CALL UPDATE_DISPLAY` is used to update the display based on the mouse input.
+   - The program then jumps back to the `MAIN_LOOP` to repeat the process indefinitely.
+
+4. **Subroutine to Read Mouse Data (`READ_MOUSE`)**:
+   - The subroutine starts by loading `B` register with `11`, representing the number of bits to read (1 Start, 8 Data, 1 Parity, 1 Stop).
+   - It enters a loop labeled `READ_BIT` to read each bit of data.
+   - `CALL WAIT_FOR_LOW` is used to wait for the clock line to go low before reading a bit from the data line.
+   - Data is read from the PS/2 data port using the `IN` instruction.
+   - The data bit is processed (either stored in a buffer or processed immediately).
+   - `CALL WAIT_FOR_HIGH` is used to wait for the clock line to go high before reading the next bit.
+   - The loop continues until all bits are read, and then the subroutine returns.
+
+5. **Subroutines to Wait for Clock Line to Go Low/High**:
+   - `WAIT_FOR_LOW` and `WAIT_FOR_HIGH` subroutines are used to wait for the clock line to go low and high, respectively.
+   - They use the `IN` instruction to read the state of the clock line from the PS/2 clock port and then test the appropriate bit (assuming active low for `WAIT_FOR_LOW` and active high for `WAIT_FOR_HIGH`).
+   - They loop until the desired state of the clock line is achieved before returning.
+
+6. **Update Display Subroutine (`UPDATE_DISPLAY`)**:
+   - This subroutine is a placeholder where the actual code to update the 7-segment display based on the mouse input should be implemented.
+   - After updating the display, the subroutine returns.
+
+Overall, this code sets up a loop where the PS/2 mouse data is continuously read, and the display is updated accordingly. 
+It demonstrates how to handle PS/2 mouse communication and implement precise timing to synchronize with the mouse clock signal.
+
+
+///////////////////////////////
 ;
 
 ; Z80 Assembly PS/2 Mouse Reading and Display Code
