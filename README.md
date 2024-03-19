@@ -1,7 +1,7 @@
 # tec-ps-2
 reading the ps/2 mouse
 
-Sure, here's a high-level assembly language example of how you might implement the PS/2 mouse driver routine:
+a high-level assembly language example of how you might implement the PS/2 mouse driver routine:
 
 ```assembly
 ; Define I/O ports and buffer sizes
@@ -87,8 +87,9 @@ This code outlines the structure of a PS/2 mouse driver routine in Z80 assembly.
 
 
 ## further
+![PS2 Keyboard Mouse Protocols Port Auxiliary Device System Timings Data Sent_page-0001](https://github.com/SteveJustin1963/tec-ps-2/assets/58069246/dced8d8f-2a58-4c1d-85a6-892ee471a015)
 
-I can explain the PS/2 keyboard and mouse protocols from an ASM (assembly language) sudo code perspective, focusing on the data transmission and timings.
+explaining the PS/2 keyboard and mouse protocols from an ASM (assembly language) sudo code perspective, focusing on the data transmission and timings.
 
 **Data Format:**
 
