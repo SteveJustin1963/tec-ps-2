@@ -1,0 +1,55 @@
+; Define I/O ports for data and clock
+.equ DATA_PORT, 0x02 ; Replace with actual port address
+.equ CLOCK_PORT, 0x03 ; Replace with actual port address
+
+.org 0x0000 ; Program origin
+
+; Function to send a byte serially
+send_byte:
+  push af ; Save registers
+  ld b, #8 ; Loop counter for 8 bits
+
+loop_bit:
+  bit 7, a ; Check MSB of data byte
+  jr nz, set_high ; If MSB set, set clock high
+  call clear_clock ; Otherwise, clear clock (low bit)
+  djnz b, loop_bit ; Decrement loop counter, repeat for all bits
+  jp done_send ; All bits sent, exit
+
+set_high:
+  call set_clock ; Set clock high
+  djnz b, loop_bit ; Decrement loop counter, repeat for all bits
+
+clear_clock:
+  ; Code to clear clock pin on CLOCK_PORT
+  ld a, #0x00 ; Load A with 0 to clear the clock pin
+  out (CLOCK_PORT), a ; Write 0 to CLOCK_PORT, setting clock pin low
+  ret
+
+set_clock:
+  ; Code to set clock pin high on CLOCK_PORT
+  ld a, #0xFF ; Load A with 255 (or any non-zero value) to set the clock pin high
+  out (CLOCK_PORT), a ; Write value to CLOCK_PORT, setting clock pin high
+  ret
+
+done_send:
+  pop af ; Restore registers
+  ret ; Return from function
+
+; Sample data to send
+message: .db "Hello, world!", 0 ; Include null terminator
+
+; Main loop
+main_loop:
+  ld hl, message ; Load address of data to send
+loop_send_char:
+  ld a, (hl) ; Load byte from data buffer
+  inc hl ; Move to next byte in buffer
+  cp #0 ; Check for end of string (null terminator)
+  jp z, done_send_string ; If end of string, exit loop
+  call send_byte ; Send current byte
+  jr loop_send_char ; Continue sending remaining bytes
+
+done_send_string:
+  ; Optional: Add code here if you want to do something after sending all bytes
+  jp main_loop ; Loop continuously
