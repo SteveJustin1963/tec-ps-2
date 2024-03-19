@@ -1,0 +1,56 @@
+;
+
+; Z80 Assembly PS/2 Mouse Reading and Display Code
+
+; Define PS/2 ports and buffer addresses
+PS2_DATA_PORT   EQU 08h    ; PS/2 Data Port
+PS2_CLOCK_PORT  EQU 09h    ; PS/2 Clock Port
+X_BUF           EQU 0900h  ; X Buffer Address
+Y_BUF           EQU 0A00h  ; Y Buffer Address
+BTN_BUF         EQU 0B00h  ; Button Buffer Address
+DISP_PORT       EQU 0Ch    ; Display Port Address (change as needed)
+
+; Program start
+ORG 0000h
+START:
+  DI                ; Disable interrupts for precise timing
+  ; Initialize stack and other registers if necessary
+  
+MAIN_LOOP:
+  CALL READ_MOUSE   ; Read mouse data
+  CALL UPDATE_DISPLAY  ; Update the display with new mouse data
+  JP MAIN_LOOP      ; Jump back to the main loop
+
+; Read Mouse Data from PS/2
+READ_MOUSE:
+  LD B, 11          ; 11 bits: 1 Start, 8 Data, 1 Parity, 1 Stop
+READ_BIT:
+  CALL WAIT_FOR_LOW  ; Wait for clock line to go low
+  IN A, (PS2_DATA_PORT)  ; Read a bit from the data line
+  RRC A             ; Rotate right through carry to process the bit
+  ; ... (Store the bit in a buffer or process immediately)
+  CALL WAIT_FOR_HIGH ; Wait for clock line to go high before reading the next bit
+  DJNZ READ_BIT     ; Decrement B, and repeat until all bits are read
+  RET
+
+; Subroutine to wait for clock line to go low
+WAIT_FOR_LOW:
+  IN A, (PS2_CLOCK_PORT)
+  BIT 0, A          ; Test the clock bit (assuming active low)
+  JP NZ, WAIT_FOR_LOW ; If not low, keep waiting
+  RET
+
+; Subroutine to wait for clock line to go high
+WAIT_FOR_HIGH:
+  IN A, (PS2_CLOCK_PORT)
+  BIT 0, A          ; Test the clock bit (assuming active high)
+  JP Z, WAIT_FOR_HIGH ; If not high, keep waiting
+  RET
+
+; Update Display with Mouse Data
+UPDATE_DISPLAY:
+  ; Code to update the 7-segment display goes here
+  RET
+
+; End of program
+END START
